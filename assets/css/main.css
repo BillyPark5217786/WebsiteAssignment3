@@ -152,8 +152,8 @@ input, select, textarea {
 		}
 
 	body {
-		background-color: #323232;
-		color: #ededed;
+		background-color: #ffffff;
+		color: #000000;
 	}
 
 	body, input, select, textarea {
@@ -316,11 +316,11 @@ input, select, textarea {
 	}
 
 	input, select, textarea {
-		color: #ededed;
+		color: #000000;
 	}
 
 	a {
-		color: #ededed;
+		color: #000000;
 	}
 
 		a:hover {
@@ -328,11 +328,11 @@ input, select, textarea {
 		}
 
 	strong, b {
-		color: #ededed;
+		color: #000000;
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: #ededed;
+		color: #000000;
 	}
 
 	blockquote {
@@ -2187,9 +2187,9 @@ input, select, textarea {
 	button,
 	.button {
 		background-color: transparent;
-		box-shadow: inset 0 0 0 2px #ededed;
-		color: #ededed !important;
-	}ededed
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+		color: #000000 !important;
+	}
 
 		input[type="submit"]:hover,
 		input[type="reset"]:hover,
@@ -2215,7 +2215,7 @@ input, select, textarea {
 		input[type="button"].primary,
 		button.primary,
 		.button.primary {
-			background-color: #ededed;
+			background-color: #000000;
 			box-shadow: none;
 			color: #ffffff !important;
 		}
