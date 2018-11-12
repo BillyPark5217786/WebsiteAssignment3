@@ -14,10 +14,49 @@
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 		<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
 		<script src='draft_temple.js'></script>
+		<script src='assets\TotalFamilyIncomeDifference.js'></script>
+		<script src='assets\RentDifference.js'></script>
 		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
 		<style>
 				body { margin:0; padding:0; }
 				#map { position:absolute; top:0; bottom:0; width:100%; }
+				#map2 { position:absolute; top:0; bottom:0; width:100%; }
+				#menu {
+				background: #fff;
+				position: absolute;
+				z-index: 1;
+				top: 10px;
+				left: 10px;
+				border-radius: 3px;
+				width: 120px;
+				border: 1px solid rgba(0,0,0,0.4);
+				font-family: 'Open Sans', sans-serif;
+							}
+				#menu a {
+				font-size: 13px;
+				color: #404040;
+				display: block;
+				margin: 0;
+				padding: 0;
+				padding: 10px;
+				text-decoration: none;
+				border-bottom: 1px solid rgba(0,0,0,0.25);
+				text-align: center;
+				}
+				#menu a:last-child {
+				border: none;
+				}
+				#menu a:hover {
+				background-color: #f8f8f8;
+				color: #404040;
+				}
+				#menu a.active {
+				background-color: #3887be;
+				color: #ffffff;
+				}
+				#menu a.active:hover {
+				background: #3074a4;
+				}
 		</style>
 	</head>
 	<body class="is-preload">
@@ -39,7 +78,208 @@
 							</div>
 						</section>
 
+				<!-- Wee -->
+				<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-right content-align-left image-position-center">
+					<div class="content">
+						<h2>Rent Difference</h2>
+						<p>Data shown here represents the avergae median weekly rent. The height represents the increase of rent from 2011 to 2016, higher the bar, increase of rent. Darker the block represents the higher the rent in 2016. Comparing it with the difference in household income from 2011 to 2016 shows that as with correlation to the latte line houshold income has still remained higher north of the border</p>
+						<p></p>
+					</div>
+					<div class="image">
+						<div id='map2'></div>
+						<nav id="menu"></nav>
+						<script>
+							mapboxgl.accessToken = 'pk.eyJ1IjoiYmlsbHlwYXJrIiwiYSI6ImNqbGVpNnp4dzBtZTYzcGxxanFhNTRld3QifQ.vAG7tk8UVZuoE3KDCzC5NQ';
+							var maptwo = new mapboxgl.Map({
+									container: 'map2', // container id
+									style: 'mapbox://styles/mapbox/light-v9', // stylesheet location
+									center: [151.004105, -33.813002], // starting position [lng, lat]
+									pitch: 45,
+									bearing: -17.6,
+									zoom: 9// starting zoom
+							});
+							maptwo.on('load', function() {
+
+								maptwo.addLayer({
+									"id":"TotalFamilyIncomeDifference",
+										"type": "fill-extrusion",
+										"source": {
+											"type": 'geojson',
+											'data': TotalFamilyIncomeDifference
+										},
+											'paint': {
+													'fill-extrusion-color' : {
+														'property': 'F_Inc_2016',
+														"stops":[
+														[0, '#ffffff'],
+														[3500, '#2D2D2D']
+														]
+
+										},
+										'fill-extrusion-height' : {
+											'property': 'F_Inc_Diff',
+											"stops":[
+											[0.0002, 0],
+											[1, 2500]
+										]
+									},
+										'fill-extrusion-opacity': .7
+									}
+								});
+								maptwo.addLayer({
+									"id": "RentDifference",
+									"type": "fill-extrusion",
+									"source": {
+													'type': 'geojson',
+													'data': RentDifference
+										},
+											'paint': {
+													'fill-extrusion-color' : {
+														'property': 'Rent_W_16',
+														"stops":[
+														[0, '#FFFFFF'],
+														[800, '#760000']
+														]
+
+										},
+										'fill-extrusion-height' : {
+											'property': 'Rent_Diff',
+											"stops":[
+											[0.0002, 0],
+											[1, 2500]
+										]
+									},
+										'fill-extrusion-opacity': .7
+									}
+								});
+								maptwo.addLayer({
+									"id":"LatteLine",
+									"type": "line",
+									"source": {
+										"type": 'geojson',
+										'data': {
+											"type": "Feature",
+											"properties": {},
+											"geometry": {
+												"type":"LineString",
+												"coordinates": [
+													[151.195974, -33.973336],
+													[150.711421, -33.528185]
+												]
+											}
+										}
+									},
+									'layout': {
+										'line-join': "round",
+										'line-cap': "round"
+									},
+									'paint':{
+										'line-color': '#000',
+										'line-width': 2
+									}
+								});
+								});
+								//LIST OF LayerIDs and Display Text
+								var toggleableLayerIds = ['TotalFamilyIncomeDifference', 'RentDifference'];
+								var toggleableLayerText = ['Income', 'Rent'];
+
+								//TOGGLE
+								for (var i = 0; i < toggleableLayerIds.length; i++) {
+									var id = toggleableLayerIds[i];
+									var idText= toggleableLayerText[i];
+									var link = document.createElement('a');
+									link.href = '#';
+									link.className = 'active';
+									link.textContent = idText;
+									link.textId = id;
+									link.onclick = function (e) {
+										var clickedLayer = this.textId;
+										e.preventDefault();
+										e.stopPropagation();
+										var visibility = maptwo.getLayoutProperty(clickedLayer, 'visibility');
+										if (visibility === 'visible') {
+											maptwo.setLayoutProperty(clickedLayer, 'visibility', 'none');
+											this.className = '';
+										} else {
+											this.className = 'active';
+											maptwo.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+										}
+									};
+									var layers = document.getElementById('menu');
+									layers.appendChild(link);
+								}
+							</script>
+					</div>
+				</section>
+
 				<!-- Two 2 -->
+				<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-left content-align-left image-position-center">
+					<div class="content">
+						<h2>Concept</h2>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum dolor sit amet.</p>
+						<ul class="actions stacked">
+							<li><a href="#" class="button">Learn More</a></li>
+						</ul>
+					</div>
+					<div class="image">
+						<img src="images\Concept\dd3ec0ee-20e8-11e3-a92a-00144feab7de.jpg" alt="" />
+					</div>
+				</section>
+
+				<section class="wrapper style1 align-center">
+					<div class="inner">
+						<h2>Fight Me</h2>
+						<p>Try and watch me spell Mesopotamia. I will drown those children</p>
+					</div>
+				</section>
+
+				<section>
+				<div class="gallery lightbox onscroll-fade-in style1 big">
+					<article>
+						<a href="images\Concept\maxresdefault.jpg" class="image">
+							<img src="images\Concept\ThumbBladeRunner.jpg" alt="" />
+						</a>
+						<div class="caption">
+							<h3>Blade Runner</h3>
+							<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+						</div>
+					</article>
+					<article>
+						<a href="images\Concept\Tour_de_babel.jpg" class="image">
+							<img src="images\Concept\ThumbTowerBabel.jpg" alt="" />
+						</a>
+						<div class="caption">
+							<h3>Tower of Babylon</h3>
+							<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+						</div>
+					</article>
+					<article>
+						<a href="images\Concept\Ancient_ziggurat_at_Ali_Air_Base_Iraq_2005.jpg" class="image">
+							<img src="images\Concept\Ancient_ziggurat_at_Ali_Air_Base_Iraq_2005.jpg" alt="" />
+						</a>
+						<div class="caption">
+							<h3>Mesopotamian Ziggurat</h3>
+							<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+						</div>
+					</article>
+				</div>
+			</section>
+
+				<!-- Three -->
+					<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-right content-align-left image-position-center">
+						<div class="content">
+							<h2>Weeee</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum dolor sit amet.</p>
+							<ul class="actions stacked">
+								<li><a href="#" class="button">Learn More</a></li>
+							</ul>
+						</div>
+						<div class="image">
+							<img src="images\Renders\Pyramid_Comp_002.png" alt="" />
+						</div>
+					</section>
+
+				<!-- Break -->
 
 					<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-left content-align-left image-position-center">
 						<div class="content">
@@ -126,38 +366,38 @@
 								          'fill-extrusion-opacity': 1
 								        }
 												});
+												map.addLayer({
+													"id":"LatteLine",
+													"type": "line",
+													"source": {
+														"type": 'geojson',
+														'data': {
+															"type": "Feature",
+															"properties": {},
+															"geometry": {
+																"type":"LineString",
+																"coordinates": [
+																	[151.195974, -33.973336],
+																	[150.711421, -33.528185]
+																]
+															}
+														}
+													},
+													'layout': {
+														'line-join': "round",
+														'line-cap': "round"
+													},
+													'paint':{
+														'line-color': '#000',
+														'line-width': 2
+													}
+												});
 											});
 								</script>
 						</div>
 					</section>
 
-				<!-- Three -->
-					<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-right content-align-left image-position-center">
-						<div class="content">
-							<h2>Tempus adipiscing</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum dolor sit amet.</p>
-							<ul class="actions stacked">
-								<li><a href="#" class="button">Learn More</a></li>
-							</ul>
-						</div>
-						<div class="image">
-							<img src="images\Ziggurat_001.png" alt="" />
-						</div>
-					</section>
-
 				<!-- Four -->
-					<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-left content-align-left image-position-center">
-						<div class="content">
-							<h2>Pharetra etiam nulla</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum dolor sit amet.</p>
-							<ul class="actions stacked">
-								<li><a href="#" class="button">Learn More</a></li>
-							</ul>
-						</div>
-						<div class="image">
-							<img src="images\Renders\Pyramid_Comp_002.png" alt="" />
-						</div>
-					</section>
 
 			<!-- Booger -->
 			<section class="wrapper style1 align-center">
@@ -220,8 +460,8 @@
 									</a>
 								</article>
 								<article>
-									<a href="images/gallery/fulls/02.jpg" class="image">
-										<img src="images/gallery/thumbs/02.jpg" alt="" />
+									<a href="images\Renders\Pyramid_Comp_001.png" class="image">
+										<img src="images\Renders\Pyramid_Comp_001.png" alt="" />
 									</a>
 									<div class="caption">
 										<h3>Feugiat Lorem</h3>
@@ -232,8 +472,8 @@
 									</div>
 								</article>
 								<article>
-									<a href="images/gallery/fulls/03.jpg" class="image">
-										<img src="images/gallery/thumbs/03.jpg" alt="" />
+									<a href="images\Renders\Pyramid_Comp_004.png" class="image">
+										<img src="images\Renders\Pyramid_Comp_004.png" alt="" />
 									</a>
 									<div class="caption">
 										<h3>Magna Amet</h3>
@@ -244,32 +484,8 @@
 									</div>
 								</article>
 								<article>
-									<a href="images/gallery/fulls/04.jpg" class="image">
-										<img src="images/gallery/thumbs/04.jpg" alt="" />
-									</a>
-									<div class="caption">
-										<h3>Sed Tempus</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
-								</article>
-								<article>
-									<a href="images/gallery/fulls/05.jpg" class="image">
-										<img src="images/gallery/thumbs/05.jpg" alt="" />
-									</a>
-									<div class="caption">
-										<h3>Ultrices Magna</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
-								</article>
-								<article>
-									<a href="images/gallery/fulls/06.jpg" class="image">
-										<img src="images/gallery/thumbs/06.jpg" alt="" />
+									<a href="images\Renders\Pyramid_Comp_006.png" class="image">
+										<img src="images\Renders\Pyramid_Comp_006.png" alt="" />
 									</a>
 									<div class="caption">
 										<h3>Sed Tempus</h3>
