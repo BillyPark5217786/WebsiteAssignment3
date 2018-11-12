@@ -67,8 +67,9 @@
 				<!-- One -->
 						<section class="banner onload-image-fade-in onload-content-fade-right style2 fullscreen orient-center content-align-center image-position-center">
 							<div class="content">
-								<h1>Story</h1>
-								<p class="major">Big Booty Ass Bitches</a>.</p>
+								<h1>Ziggurat</h1>
+								<p class="major">A city on the edge.</p>
+								<p>Billy Park</p>
 								<ul class="actions stacked">
 									<li><a href="#first" class="button big wide smooth-scroll-middle">Get Started</a></li>
 								</ul>
@@ -78,12 +79,12 @@
 							</div>
 						</section>
 
-				<!-- Wee -->
-				<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-right content-align-left image-position-center">
+				<!-- Two -->
+				<section id='first' class="spotlight onscroll-image-fade-in style4 fullscreen orient-right content-align-left image-position-center">
 					<div class="content">
-						<h2>Rent Difference</h2>
-						<p>Data shown here represents the avergae median weekly rent. The height represents the increase of rent from 2011 to 2016, higher the bar, increase of rent. Darker the block represents the higher the rent in 2016. Comparing it with the difference in household income from 2011 to 2016 shows that as with correlation to the latte line houshold income has still remained higher north of the border</p>
-						<p></p>
+						<h2>The Problem</h2>
+						<p>Recently over the years <a href='https://billypark5217786.github.io/BatmanTouchesMySoulAndMyTralala/index.html'>affordability</a> of rent within Sydney has been on the increase, forcing people who rely on working within the CBD to relocate towards the cheaper western suburbs. This has been shown to be an economic and social divide that splits the city. Combined with the lack of housing available in the inner suburbs, this has led to an increase in the <a href='https://www.theguardian.com/cities/gallery/2018/apr/10/sydney-urban-sprawl-suburbs-pictures-photography-andrew-merry'>urban sprawl</a> of the city. This has all led to an increse of congestion and strain on public transport and motorways. The <a href='https://www.smh.com.au/healthcare/why-sydneys-urban-sprawl-is-making-us-sick-committee-of-sydney-report-reveals-20170119-gtuems.html'>health</a> and environmental impact on the city will lead to a large financial cost within the future. Clearly this current rate is not sutainable and to avoid significant social and financial cost within the future a better system needs to be developed.
+						</p>
 					</div>
 					<div class="image">
 						<div id='map2'></div>
@@ -111,8 +112,8 @@
 													'fill-extrusion-color' : {
 														'property': 'F_Inc_2016',
 														"stops":[
-														[0, '#ffffff'],
-														[3500, '#2D2D2D']
+														[0, '#333333'],
+														[3500, '#dd1818']
 														]
 
 										},
@@ -137,8 +138,8 @@
 													'fill-extrusion-color' : {
 														'property': 'Rent_W_16',
 														"stops":[
-														[0, '#FFFFFF'],
-														[800, '#760000']
+														[0, '#333333'],
+														[800, '#dd1818']
 														]
 
 										},
@@ -212,26 +213,187 @@
 					</div>
 				</section>
 
-				<!-- Two 2 -->
+				<!-- Three -->
+				<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-left content-align-left image-position-center">
+					<div class="content">
+						<h2>The Solution</h2>
+						<p>Build more affordable housing closer to the City.</p>
+					</div>
+					<div class="image">
+						<div id= 'map'></div>
+							<script>
+							mapboxgl.accessToken =
+							'pk.eyJ1IjoiYmlsbHlwYXJrIiwiYSI6ImNqbGVpNnp4dzBtZTYzcGxxanFhNTRld3QifQ.vAG7tk8UVZuoE3KDCzC5NQ';
+							var map = new mapboxgl.Map({
+									container: 'map', // container id
+									//style: 'mapbox://styles/billypark/cjo9uespv0pgp2qn1rzjdjblg',
+									style: 'mapbox://styles/mapbox/dark-v9', // stylesheet location
+									center: [151.217763, -33.874604], // starting position [lng, lat]
+									zoom: 13, // starting zoom
+									pitch: 75,
+									bearing: 300,
+							});
+
+
+							map.on('load', function() {
+									// Insert the layer beneath any symbol layer.
+									var layers = map.getStyle().layers;
+
+									var labelLayerId;
+									for (var i = 0; i < layers.length; i++) {
+											if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+													labelLayerId = layers[i].id;
+													break;
+											}
+									}
+
+									map.addLayer({
+										'id': '3d-buildings',
+										'source': 'composite',
+										'source-layer': 'building',
+										'filter': ['==', 'extrude', 'true'],
+										'type': 'fill-extrusion',
+										'minzoom': 12,
+										'paint': {
+												'fill-extrusion-color': '#aaa',
+
+												// use an 'interpolate' expression to add a smooth transition effect to the
+												// buildings as the user zooms in
+												'fill-extrusion-height': [
+														"interpolate", ["linear"], ["zoom"],
+														10, 2,
+														10.05, ["get", "height"]
+												],
+												'fill-extrusion-base': [
+														"interpolate", ["linear"], ["zoom"],
+														10, 2,
+														10.05, ["get", "min_height"]
+												],
+												'fill-extrusion-opacity': .6
+												}
+											}, labelLayerId);
+
+										map.addLayer({
+											"id": "data",
+											"type": "fill-extrusion",
+											"source": {
+												'type': 'geojson',
+												'data': 'draft_temple.js'
+											},
+											'layout': {
+												'visibility': 'visible'
+												},
+											'paint': {
+												'fill-extrusion-color' : {
+													'property': 'colour',
+													'type': 'identity'
+												},
+											'fill-extrusion-height' : {
+												'type': 'identity',
+												'property': 'height'
+												},
+											'fill-extrusion-base' : {
+												'type': 'identity',
+												'property': 'base_height'
+												},
+												'fill-extrusion-opacity': 1
+											}
+											});
+											map.addLayer({
+												"id":"LatteLine",
+												"type": "line",
+												"source": {
+													"type": 'geojson',
+													'data': {
+														"type": "Feature",
+														"properties": {},
+														"geometry": {
+															"type":"LineString",
+															"coordinates": [
+																[151.195974, -33.973336],
+																[150.711421, -33.528185]
+															]
+														}
+													}
+												},
+												'layout': {
+													'line-join': "round",
+													'line-cap': "round"
+												},
+												'paint':{
+													'line-color': '#c31432',
+													'line-width': 2
+												}
+											});
+										});
+							</script>
+					</div>
+				</section>
+
+				<section class="wrapper style1 align-center">
+					<div class="inner">
+						<h2>Soloutions</h2>
+						<div class="items style1 onscroll-fade-in big">
+							<section>
+								<span>
+									<div class="image fit">
+										<img src="images\Diagrams\landReclemation_001.png" alt="" />
+									</div>
+								</span>
+								<h3>Land Reclamation</h3>
+								<p>Inspired by various land reclemation projects around the world the ziggurat will take advantage of the freely available space close to the city.</p>
+							</section>
+							<section>
+								<span>
+									<div class="image fit">
+										<img src="images\Diagrams\progression_001.png" alt="" />
+									</div>
+								</span>
+								<h3>Social Courtyard</h3>
+								<p>Taking the standard 'Pruitt-Igoe' type housing block and wrapping it around a large central courtyard can create a cathedral like community space. </p>
+							</section>
+							<section>
+								<span>
+									<div class="image fit">
+										<img src="images\Diagrams\placement_001.png" alt="" />
+									</div>
+								</span>
+								<h3>Placement</h3>
+								<p>Placing the project in the harbour will allow for affordable housing and accomodation to be placed within close proximity to the city. As well as to easily incorporate the existing transportation network into the design.</p>
+							</section>
+							<section>
+								<span>
+									<div class="image fit">
+										<img src="images\Diagrams\Ziggurat_001.png" alt="" />
+									</div>
+								</span>
+								<h3>Paradise</h3>
+								<p>Somewhere to live that is affordable, private and allows a better standard of living.</p>
+							</section>
+						</div>
+					</div>
+				</section>
+
+				<!-- Four -->
 				<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-left content-align-left image-position-center">
 					<div class="content">
 						<h2>Concept</h2>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum dolor sit amet.</p>
-						<ul class="actions stacked">
-							<li><a href="#" class="button">Learn More</a></li>
-						</ul>
+						<p>Based on the Ziggurats of Mesopotamia and the Hanging Gardens of Babylon the design contributes to creating a 'Man-made' mountain that adds green space and an environmental refuge to the inner parts of Sydney.</p>
 					</div>
 					<div class="image">
 						<img src="images\Concept\dd3ec0ee-20e8-11e3-a92a-00144feab7de.jpg" alt="" />
 					</div>
 				</section>
 
+				<!-- Five -->
+
 				<section class="wrapper style1 align-center">
 					<div class="inner">
-						<h2>Fight Me</h2>
-						<p>Try and watch me spell Mesopotamia. I will drown those children</p>
+						<h2>Inspiration</h2>
 					</div>
 				</section>
+
+				<!-- Six -->
 
 				<section>
 				<div class="gallery lightbox onscroll-fade-in style1 big">
@@ -241,7 +403,7 @@
 						</a>
 						<div class="caption">
 							<h3>Blade Runner</h3>
-							<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+							<p>Riddley Scott's classic 1989 neo-noir thriller based on Phillip K. Dicks novel Do androids dream of electric sheep?</p>
 						</div>
 					</article>
 					<article>
@@ -249,8 +411,8 @@
 							<img src="images\Concept\ThumbTowerBabel.jpg" alt="" />
 						</a>
 						<div class="caption">
-							<h3>Tower of Babylon</h3>
-							<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+							<h3>Tower of Babel</h3>
+							<p>The Tower of Babel: A monument to the great achievements of man. Before someone got jealous and decided not play fair.</p>
 						</div>
 					</article>
 					<article>
@@ -259,197 +421,29 @@
 						</a>
 						<div class="caption">
 							<h3>Mesopotamian Ziggurat</h3>
-							<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+							<p>Mesopotamia: home of some of the earliest deveoplents of human achievments. It "inspired some of the most important developments in human history including the invention of the wheel, the planting of the first cereal crops and the development of cursive script, mathematics, astronomy and agriculture" <a href='http://www.historyandpolicy.org/policy-papers/papers/iraq-past-present-and-future-a-thoroughly-modern-mandate'>[Q]</a></p>
 						</div>
 					</article>
 				</div>
 			</section>
 
-				<!-- Three -->
+			<!-- Seven -->
+
+
+				<!-- Eight -->
 					<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-right content-align-left image-position-center">
 						<div class="content">
-							<h2>Weeee</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum dolor sit amet.</p>
-							<ul class="actions stacked">
-								<li><a href="#" class="button">Learn More</a></li>
-							</ul>
+							<h2>Sanctuary</h2>
 						</div>
 						<div class="image">
 							<img src="images\Renders\Pyramid_Comp_002.png" alt="" />
 						</div>
 					</section>
 
-				<!-- Break -->
-
-					<section class="spotlight onscroll-image-fade-in style4 fullscreen orient-left content-align-left image-position-center">
-						<div class="content">
-							<h2>The Solution</h2>
-							<p>Large quantities of affordable housing close to the area of most employment within the region.</p>
-						</div>
-						<div class="image">
-							<div id= 'map'></div>
-								<script>
-								mapboxgl.accessToken =
-								'pk.eyJ1IjoiYmlsbHlwYXJrIiwiYSI6ImNqbGVpNnp4dzBtZTYzcGxxanFhNTRld3QifQ.vAG7tk8UVZuoE3KDCzC5NQ';
-								var map = new mapboxgl.Map({
-								    container: 'map', // container id
-								    //style: 'mapbox://styles/billypark/cjo9uespv0pgp2qn1rzjdjblg',
-										style: 'mapbox://styles/mapbox/dark-v9', // stylesheet location
-										center: [151.217763, -33.874604], // starting position [lng, lat]
-								    zoom: 13, // starting zoom
-								    pitch: 75,
-								    bearing: 300,
-								});
-
-
-								map.on('load', function() {
-								    // Insert the layer beneath any symbol layer.
-								    var layers = map.getStyle().layers;
-
-								    var labelLayerId;
-								    for (var i = 0; i < layers.length; i++) {
-								        if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
-								            labelLayerId = layers[i].id;
-								            break;
-								        }
-								    }
-
-										map.addLayer({
-											'id': '3d-buildings',
-											'source': 'composite',
-											'source-layer': 'building',
-											'filter': ['==', 'extrude', 'true'],
-											'type': 'fill-extrusion',
-											'minzoom': 12,
-											'paint': {
-													'fill-extrusion-color': '#aaa',
-
-													// use an 'interpolate' expression to add a smooth transition effect to the
-													// buildings as the user zooms in
-													'fill-extrusion-height': [
-															"interpolate", ["linear"], ["zoom"],
-															10, 2,
-															10.05, ["get", "height"]
-													],
-													'fill-extrusion-base': [
-															"interpolate", ["linear"], ["zoom"],
-															10, 2,
-															10.05, ["get", "min_height"]
-													],
-													'fill-extrusion-opacity': .6
-													}
-												}, labelLayerId);
-
-								      map.addLayer({
-								        "id": "data",
-								        "type": "fill-extrusion",
-								        "source": {
-								          'type': 'geojson',
-								          'data': 'draft_temple.js'
-								        },
-								        'layout': {
-								          'visibility': 'visible'
-								          },
-								        'paint': {
-								          'fill-extrusion-color' : {
-								            'property': 'colour',
-								            'type': 'identity'
-								          },
-								        'fill-extrusion-height' : {
-								          'type': 'identity',
-								          'property': 'height'
-								          },
-								        'fill-extrusion-base' : {
-								          'type': 'identity',
-								          'property': 'base_height'
-								          },
-								          'fill-extrusion-opacity': 1
-								        }
-												});
-												map.addLayer({
-													"id":"LatteLine",
-													"type": "line",
-													"source": {
-														"type": 'geojson',
-														'data': {
-															"type": "Feature",
-															"properties": {},
-															"geometry": {
-																"type":"LineString",
-																"coordinates": [
-																	[151.195974, -33.973336],
-																	[150.711421, -33.528185]
-																]
-															}
-														}
-													},
-													'layout': {
-														'line-join': "round",
-														'line-cap': "round"
-													},
-													'paint':{
-														'line-color': '#000',
-														'line-width': 2
-													}
-												});
-											});
-								</script>
-						</div>
-					</section>
-
-				<!-- Four -->
-
-			<!-- Booger -->
-			<section class="wrapper style1 align-center">
-				<div class="inner">
-					<h2 id='first'>Problems</h2>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum.</p>
-					<div class="items style1 onscroll-fade-in big">
-						<section>
-							<span>
-								<div class="image fit">
-									<img src="images\Diagrams\landReclemation_001.png" alt="" />
-								</div>
-							</span>
-							<h3>Lorem</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-						</section>
-						<section>
-							<span>
-								<div class="image fit">
-									<img src="images\Diagrams\progression_001.png" alt="" />
-								</div>
-							</span>
-							<h3>Ipsum</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-						</section>
-						<section>
-							<span>
-								<div class="image fit">
-									<img src="images\Diagrams\placement_001.png" alt="" />
-								</div>
-							</span>
-							<h3>Dolor</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-						</section>
-						<section>
-							<span>
-								<div class="image fit">
-									<img src="images\Diagrams\Ziggurat_001.png" alt="" />
-								</div>
-							</span>
-							<h3>Amet</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-						</section>
-					</div>
-				</div>
-			</section>
-
-				<!-- Five -->
+				<!-- Nine -->
 					<section class="wrapper style1 align-center">
 						<div class="inner">
-							<h2>Massa sed condimentum</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum.</p>
+							<h2>Renders</h2>
 						</div>
 
 						<!-- Gallery -->
@@ -463,45 +457,20 @@
 									<a href="images\Renders\Pyramid_Comp_001.png" class="image">
 										<img src="images\Renders\Pyramid_Comp_001.png" alt="" />
 									</a>
-									<div class="caption">
-										<h3>Feugiat Lorem</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
 								</article>
 								<article>
 									<a href="images\Renders\Pyramid_Comp_004.png" class="image">
 										<img src="images\Renders\Pyramid_Comp_004.png" alt="" />
 									</a>
-									<div class="caption">
-										<h3>Magna Amet</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
 								</article>
 								<article>
 									<a href="images\Renders\Pyramid_Comp_006.png" class="image">
 										<img src="images\Renders\Pyramid_Comp_006.png" alt="" />
 									</a>
-									<div class="caption">
-										<h3>Sed Tempus</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
 								</article>
 							</div>
 
 					</section>
-
-				<!-- Six -->
-
-				<!-- Seven -->
 
 				<!-- Footer -->
 				<footer class="wrapper style1 align-center">
